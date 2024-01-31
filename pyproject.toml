@@ -1,0 +1,30 @@
+[project]
+name = "catm-apiserver"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "ylei", email = "2457738122@qq.com"},
+]
+dependencies = []
+requires-python = "==3.11.*"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm]
+distribution = false
+
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "ruff",
+]
+
+
+[tool.pdm.scripts]
+# 开发环境
+dev.env_file.override = ".env"
+# dev.cmd = "uvicorn catm.main:app --host 0.0.0.0 --port 8000 --reload"
