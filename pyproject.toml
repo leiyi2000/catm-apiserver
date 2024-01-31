@@ -5,7 +5,17 @@ description = "Default template for PDM package"
 authors = [
     {name = "ylei", email = "2457738122@qq.com"},
 ]
-dependencies = []
+dependencies = [
+    "fastapi>=0.109.0,<0.110",
+    "tortoise-orm>=0.20.0,<0.21.0",
+    "uvicorn[standard]>=0.27.0.post1",
+    "structlog>=24.1.0",
+    "asyncmy>=0.2.9",
+    "aerich>=0.7.2",
+    "redis[hiredis]>=5.0.1",
+    "argon2-cffi>=23.1.0",
+    "python-jose[cryptography]>=3.3.0",
+]
 requires-python = "==3.11.*"
 readme = "README.md"
 license = {text = "MIT"}
@@ -23,8 +33,7 @@ dev = [
     "ruff",
 ]
 
-
 [tool.pdm.scripts]
 # 开发环境
 dev.env_file.override = ".env"
-# dev.cmd = "uvicorn catm.main:app --host 0.0.0.0 --port 8000 --reload"
+dev.cmd = "uvicorn catm.main:app --host 0.0.0.0 --port 8000 --reload"
