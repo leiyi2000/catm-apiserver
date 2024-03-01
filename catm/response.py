@@ -1,18 +1,22 @@
 """响应"""
-from typing import Any, Mapping
+from typing import Mapping, Any
 
 from pydantic import BaseModel
-
 from fastapi.responses import JSONResponse
 from starlette.background import BackgroundTask
 
 
-class ErrorResponseSchema(BaseModel):
+class ResponseBody(BaseModel):
+    """正常响应"""
+
+    data: Any
+
+
+class ErrorContentSchema(BaseModel):
     """错误消息BODY"""
 
     code: int
-    msg: str | None
-    data: Any
+    msg: str
 
 
 class ErrorResponse(JSONResponse):
@@ -20,8 +24,7 @@ class ErrorResponse(JSONResponse):
     def __init__(
         self,
         code: int, 
-        msg: str | None = None,
-        data: Any = None,
+        msg: str,
         status_code: int = 400,
         headers: Mapping[str, str] | None = None, 
         media_type: str | None = None, 
@@ -31,12 +34,11 @@ class ErrorResponse(JSONResponse):
 
         Args:
             code (int): 业务码.
-            msg (str, optional): 错误消息.
-            data (Any, optional): 数据.
+            msg (str): 错误消息.
             status_code (int, optional): http code.
             headers (Mapping[str, str] | None, optional): 头.
             media_type (str | None, optional): 媒体类型.
             background (BackgroundTask | None, optional): ?.
         """
-        content = ErrorResponseSchema(code=code, msg=msg, data=data).model_dump(mode="json")
+        content = ErrorContentSchema(code=code, msg=msg).model_dump(mode="json")
         super().__init__(content, status_code, headers, media_type, background)

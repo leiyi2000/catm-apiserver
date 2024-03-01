@@ -6,14 +6,19 @@ from aerich import Command
 from fastapi import FastAPI, Request, status
 from tortoise.contrib.fastapi import register_tortoise
 
-from catm.settings import TORTOISE_ORM, APP_NAME
+from catm.api import router
 from catm.response import ErrorResponse
 from catm.exceptions import AuthException
+from catm.settings import TORTOISE_ORM, APP_NAME
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """迁移表结构"""
+    """初始化执行脚本.
+
+    Args:
+        app (FastAPI): app.
+    """
     command = Command(tortoise_config=TORTOISE_ORM, app=APP_NAME, location="./migrations")
     await command.init()
     # await command.migrate()
@@ -30,6 +35,7 @@ async def lifespan(app: FastAPI):
 
 log = structlog.get_logger()
 app = FastAPI(lifespan=lifespan)
+app.include_router(router)
 
 
 @app.get(
@@ -41,12 +47,16 @@ async def health():
     return True
 
 
-# 认证异常捕获
 @app.exception_handler(AuthException)
-async def jwt_exception_handler(request: Request, exc: AuthException):
+async def jwt_exception_handler(_request: Request, _exc: AuthException):
+    """拦截JWT认证失败的异常.
+
+    Returns:
+        ErrorResponse: 10001 jwt authentication failed.
+    """
     return ErrorResponse(
         code=10001,
-        msg="auth err",
+        msg="jwt authentication failed",
         status_code=status.HTTP_401_UNAUTHORIZED,
     )
 
