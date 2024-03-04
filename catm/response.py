@@ -12,8 +12,8 @@ class ResponseBody(BaseModel):
     data: Any
 
 
-class ErrorContentSchema(BaseModel):
-    """错误消息BODY"""
+class ErrorResponseBody(BaseModel):
+    """错误消息"""
 
     code: int
     msg: str
@@ -40,5 +40,5 @@ class ErrorResponse(JSONResponse):
             media_type (str | None, optional): 媒体类型.
             background (BackgroundTask | None, optional): ?.
         """
-        content = ErrorContentSchema(code=code, msg=msg).model_dump(mode="json")
+        content = {"code": code, "msg": msg}
         super().__init__(content, status_code, headers, media_type, background)

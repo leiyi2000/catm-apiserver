@@ -1,8 +1,13 @@
 """redis"""
+import uuid
+
 from redis.asyncio import Redis
 
+from catm.settings import REDIS_URL, APP_NAME
 
-from catm.settings import REDIS_URL
+
+client = Redis.from_url(REDIS_URL, decode_responses=True)
 
 
-client = Redis.from_url(REDIS_URL)
+def rsa_cache_key(kid: uuid.UUID | str) -> str:
+    return f"{APP_NAME}:rsa:{kid}"
