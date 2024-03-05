@@ -21,5 +21,5 @@ RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 RUN pip install --no-cache-dir -r /code/requirements.txt
 
 COPY ./catm /code/catm
-# COPY ./migrations /code/migrations
+COPY ./migrations /code/migrations
 CMD ["uvicorn", "catm.main:app", "--host", "0.0.0.0", "--port", "8000"]

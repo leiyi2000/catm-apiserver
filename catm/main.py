@@ -4,8 +4,14 @@ from contextlib import asynccontextmanager
 import structlog
 from aerich import Command
 from fastapi import FastAPI, Request, status
-from tortoise.contrib.fastapi import register_tortoise
 
+from tortoise.contrib.fastapi import register_tortoise
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+
+
+from catm import models
 from catm.api import router
 from catm.response import ErrorResponse
 from catm.exceptions import AuthException
@@ -21,7 +27,6 @@ async def lifespan(app: FastAPI):
     """
     command = Command(tortoise_config=TORTOISE_ORM, app=APP_NAME, location="./migrations")
     await command.init()
-    # await command.migrate()
     log.info("aerich upgrade")
     await command.upgrade(run_in_transaction=True)
     # fastapi注册数据库配置
@@ -30,10 +35,34 @@ async def lifespan(app: FastAPI):
         config=TORTOISE_ORM,
         add_exception_handlers=False,
     )
+    # 初始化RSA密钥对
+    key_pair_count = await models.KeyPair.all().count()
+    while key_pair_count < 32:
+        private_key = rsa.generate_private_key(
+            public_exponent=65537,
+            key_size=2048,
+            backend=default_backend()
+        )
+        public_key = private_key.public_key()
+        private_key_pem = private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption()
+        )
+        public_key_pem = public_key.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+        )
+        await models.KeyPair.create(
+            public_key=public_key_pem.decode(),
+            private_key=private_key_pem.decode(),
+        )
+        key_pair_count += 1
+    log.info(f"create key pair over {key_pair_count}")
     yield
 
 
-log = structlog.get_logger()
+log = structlog.getLogger()
 app = FastAPI(lifespan=lifespan)
 app.include_router(router)
 

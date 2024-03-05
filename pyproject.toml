@@ -14,7 +14,7 @@ dependencies = [
     "aerich>=0.7.2",
     "redis[hiredis]>=5.0.1",
     "argon2-cffi>=23.1.0",
-    "python-jose[cryptography]>=3.3.0",
+    "cryptography>=42.0.5",
 ]
 requires-python = "==3.11.*"
 readme = "README.md"

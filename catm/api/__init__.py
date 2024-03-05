@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from catm.api import rsa
+from catm.api import rsa, user
 
 
 router = APIRouter()
@@ -10,4 +10,10 @@ router.include_router(
     rsa.router,
     prefix="/rsa",
     tags=["RSA"],
+)
+
+router.include_router(
+    user.router,
+    prefix="/user",
+    tags=["用户"],
 )

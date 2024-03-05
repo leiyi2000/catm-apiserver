@@ -1,18 +1,15 @@
-"""随机RSA密钥对"""
-import rsa
-import uuid
+"""随机RSA密钥"""
 import random
 
 import structlog
 from fastapi import APIRouter
 
-from catm import redis
+from catm import models
 from catm.response import ResponseBody
 
 
 router = APIRouter()
 log = structlog.getLogger()
-kids = [uuid.uuid1() for _ in range(1024)]
 
 
 @router.get(
@@ -25,10 +22,10 @@ async def read():
     Returns:
         ResponseBody: {"kid": uuid, "pub_key": pub_key}.
     """
-    pub_key, priv_key = rsa.newkeys(512)
+    kids = await models.KeyPair.all().only("id").values_list("id", flat=True)
     kid = random.choice(kids)
-    await redis.client.set(redis.rsa_cache_key(kid), priv_key.save_pkcs1(), ex=600)
+    key_pair = await models.KeyPair.all().only("public_key").get(id=kid)
     return ResponseBody(data={
         "kid": kid,
-        "pub_key": pub_key.save_pkcs1(),
+        "public_key": key_pair.public_key,
     })
