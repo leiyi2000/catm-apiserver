@@ -12,13 +12,6 @@ class ResponseBody(BaseModel):
     data: Any
 
 
-class ErrorResponseBody(BaseModel):
-    """错误消息"""
-
-    code: int
-    msg: str
-
-
 class ErrorResponse(JSONResponse):
 
     def __init__(

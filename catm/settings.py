@@ -19,3 +19,5 @@ REDIS_URL = Env.string("REDIS_URL", default="redis://redis:6379/0")
 # DEBUG开关
 DEBUG = Env.boolean("DEBUG", default=False)
 API_TOKEN = Env.string("API_TOKEN", default="VLzIs5uIvWIv7Smj")
+# JWT
+JWT_NAME = "jwt"

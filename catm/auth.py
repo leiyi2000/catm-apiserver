@@ -17,7 +17,7 @@ from cryptography.hazmat.primitives.serialization import (
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 
 from catm import redis, models
-from catm.settings import DEBUG, APP_NAME, API_TOKEN
+from catm.settings import DEBUG, APP_NAME, API_TOKEN, JWT_NAME
 from catm.exceptions import JwtAuthException, TokenAuthException
 
 
@@ -254,4 +254,4 @@ class _TokenAuth:
 
 
 TokenAuth = _TokenAuth()
-JwtAuth = _JwtAuth()
+JwtAuth = _JwtAuth(JWT_NAME)
