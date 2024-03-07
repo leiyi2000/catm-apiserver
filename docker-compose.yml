@@ -11,14 +11,12 @@ services:
     environment:
       MYSQL_DB_URL: ${MYSQL_DB_URL:-mysql://root:123456@127.0.0.1:3306/catm?charset=utf8mb4}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
-      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
-      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME:-catm}
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-s4smgHKP9VuIocu60ZwX}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-9Xlw0lV31Ps511JyWPGBEWGELgwJCQxgOdTM8WEq}
+      FILE_STORAGE: /data
+    volumes:
+      - file-storage-volume:/data
     depends_on:
       - mysql
       - redis
-      - minio
 
   mysql:
     image: mysql:8.2.0
@@ -31,29 +29,9 @@ services:
     volumes:
       - mysql-volume:/var/lib/mysql
 
-  minio:
-    image: quay.io/minio/minio
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    volumes:
-      - minio-volume:/data
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-root}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-12345678}
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-s4smgHKP9VuIocu60ZwX}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-9Xlw0lV31Ps511JyWPGBEWGELgwJCQxgOdTM8WEq}
-    command: server /data --console-address ":9001"
-
-  redis:
-    image: redis
-    restart: always
-    networks:
-      - net
-
 volumes:
   mysql-volume:
-  minio-volume:
+  file-storage-volume:
 
 networks:
   net:

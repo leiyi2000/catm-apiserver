@@ -1,15 +1,18 @@
 """用户"""
-from fastapi import APIRouter, Body, Response, Depends
+import os
+from uuid import UUID
 
-from catm.response import ErrorResponse
+from fastapi import APIRouter, Body, Response, Depends, Path
+
 from catm import models, schemas
-from catm.settings import JWT_NAME
+from catm.settings import JWT_NAME, FILE_STORAGE
+from catm.response import ErrorResponse, ResponseBody
 from catm.auth import (
     JwtAuth,
     Credential,
     make_password,
     verify_password,
-) 
+)
 
 
 router = APIRouter()
@@ -85,3 +88,45 @@ async def login(
         return ErrorResponse(code=103, msg="account or password error")
     await JwtAuth.create_jwt(Credential(user_id=user.id), response)
     return schemas.User.model_validate(user)
+
+
+def avatar_store_path(user_id: str | UUID) -> str:
+    """获取用户头像存储地址.
+
+    Args:
+        user_id (str | UUID): 用户名.
+
+    Returns:
+        str: 存储地址.
+    """
+    user_id = str(user_id)
+    dir = os.path.join(FILE_STORAGE, "avatar", user_id[:4])
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+    return dir + "/" + user_id
+
+
+@router.post(
+    "/avatar",
+    description="上传头像",
+)
+async def upload_avatar(
+    credential: Credential = Depends(JwtAuth),
+    avatar_base64: str = Body(),
+):
+    user_id = credential.user_id
+    with open(avatar_store_path(user_id), "w") as file:
+        file.write(avatar_base64)
+    return ResponseBody(data="ok")
+
+
+@router.get(
+    "/avatar/{user_id}",
+    description="查询玩家头像",
+)
+async def read_avatar(
+    user_id: UUID = Path(),
+):
+    with open(avatar_store_path(user_id), "rb") as file:
+        avatar_base64 = file.read()
+    return ResponseBody(data=avatar_base64)

@@ -21,3 +21,5 @@ DEBUG = Env.boolean("DEBUG", default=False)
 API_TOKEN = Env.string("API_TOKEN", default="VLzIs5uIvWIv7Smj")
 # JWT
 JWT_NAME = "jwt"
+# 文件存储
+FILE_STORAGE = Env.string("FILE_STORAGE")
