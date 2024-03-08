@@ -30,3 +30,22 @@ class User(models.Model):
         """元数据"""
 
         table = "user"
+
+
+class Music(models.Model):
+    """音乐表"""
+
+    id = fields.UUIDField(pk=True, description="音乐ID")
+    name = fields.CharField(max_length=128, description="音乐名称")
+    play_url = fields.CharField(max_length=128, null=True, description="播放链接")
+    singer = fields.JSONField(null=True, description="歌手")
+    status = fields.CharField(max_length=32, description="状态")
+    creator = fields.UUIDField(description="创建者ID")
+
+    created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+
+    class Meta:
+        """元数据"""
+
+        table = "music"
