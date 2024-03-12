@@ -4,12 +4,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: catm-apiserver:laste
     ports:
       - '8000:8000'
     networks:
       - net
     environment:
-      MYSQL_DB_URL: ${MYSQL_DB_URL:-mysql://root:123456@127.0.0.1:3306/catm?charset=utf8mb4}
+      MYSQL_DB_URL: ${MYSQL_DB_URL:-mysql://root:123456@mysql:3306/catm?charset=utf8mb4}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
       FILE_STORAGE: /data
     volumes:
@@ -28,6 +29,12 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
     volumes:
       - mysql-volume:/var/lib/mysql
+
+  redis:
+    image: redis
+    restart: always
+    networks:
+      - net
 
 volumes:
   mysql-volume:

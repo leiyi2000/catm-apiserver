@@ -30,7 +30,7 @@ async def create(
 ):
     # TODO 验证码
     if await models.User.get_or_none(username=username):
-        return ErrorResponse(code=102, msg="user name has been registered", status_code=400)
+        return ErrorResponse(code=102, msg="user name has been registered")
     password = await make_password(kid, password)
     user = await models.User.create(
         username=username,
