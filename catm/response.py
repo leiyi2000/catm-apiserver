@@ -1,15 +1,8 @@
 """响应"""
-from typing import Mapping, Any
+from typing import Mapping
 
-from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 from starlette.background import BackgroundTask
-
-
-class ResponseBody(BaseModel):
-    """正常响应"""
-
-    data: Any
 
 
 class ErrorResponse(JSONResponse):

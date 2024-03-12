@@ -5,8 +5,8 @@ from uuid import UUID
 from fastapi import APIRouter, Body, Response, Depends, Path
 
 from catm import models, schemas
+from catm.response import ErrorResponse
 from catm.settings import JWT_NAME, FILE_STORAGE
-from catm.response import ErrorResponse, ResponseBody
 from catm.auth import (
     JwtAuth,
     Credential,
@@ -117,7 +117,7 @@ async def upload_avatar(
     user_id = credential.user_id
     with open(avatar_store_path(user_id), "w") as file:
         file.write(avatar_base64)
-    return ResponseBody(data="ok")
+    return "ok"
 
 
 @router.get(
@@ -129,4 +129,6 @@ async def read_avatar(
 ):
     with open(avatar_store_path(user_id), "rb") as file:
         avatar_base64 = file.read()
-    return ResponseBody(data=avatar_base64)
+    return {
+        "avatar_base64": avatar_base64
+    }
