@@ -108,7 +108,7 @@ def avatar_store_path(user_id: str | UUID) -> str:
 
 @router.post(
     "/avatar",
-    description="上传头像",
+    description="上传用户头像",
 )
 async def upload_avatar(
     credential: Credential = Depends(JwtAuth),
@@ -122,13 +122,14 @@ async def upload_avatar(
 
 @router.get(
     "/avatar/{user_id}",
-    description="查询玩家头像",
+    description="获取用户头像",
 )
 async def read_avatar(
     user_id: UUID = Path(),
 ):
-    with open(avatar_store_path(user_id), "rb") as file:
-        avatar_base64 = file.read()
-    return {
-        "avatar_base64": avatar_base64
-    }
+    file_path = avatar_store_path(user_id)
+    if not os.path.exists(file_path):
+        return ErrorResponse(code=104, msg="avatar not found")
+    with open(file_path, "rb") as file:
+        avatar = file.read()
+    return avatar
