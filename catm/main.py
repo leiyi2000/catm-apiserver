@@ -81,10 +81,10 @@ async def jwt_exception_handler(_request: Request, _exc: AuthException):
     """拦截JWT认证失败的异常.
 
     Returns:
-        ErrorResponse: 10001 jwt authentication failed.
+        ErrorResponse: 101 jwt authentication failed.
     """
     return ErrorResponse(
-        code=10001,
+        code=101,
         msg="jwt authentication failed",
         status_code=status.HTTP_401_UNAUTHORIZED,
     )

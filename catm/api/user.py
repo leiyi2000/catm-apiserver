@@ -90,6 +90,20 @@ async def login(
     return schemas.User.model_validate(user)
 
 
+@router.get(
+    "/logout",
+    description="退出登录",
+)
+async def logout(response: Response):
+    """退出登录
+
+    Args:
+        response (Response): 响应.
+    """
+    response.delete_cookie(JWT_NAME)
+    return "ok"
+
+
 def avatar_store_path(user_id: str | UUID) -> str:
     """获取用户头像存储地址.
 
